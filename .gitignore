@@ -1,0 +1,6 @@
+/.idea
+/datacenter/__pycache__
+/project/__pycache__
+/venv
+.env
+

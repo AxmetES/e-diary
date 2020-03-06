@@ -1,0 +1,7 @@
+>>> def fun(marks):
+...     for mark in marks:
+...             mark.points=4
+...             mark.save()
+
+>>> fun(marks)
+
