@@ -1,5 +1,7 @@
 from datacenter.models import Schoolkid, Commendation, Teacher, Chastisement, Mark
-from django.core.exceptions import MultipleObjectsReturned
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.shortcuts import get_object_or_404
+
 import random
 
 schoolkid_name = "Фролов Иван"
@@ -14,7 +16,7 @@ praise = ['Молодец!', 'Отлично!', 'Хорошо!', 'Гораздо
           ' Мы с тобой не зря поработали!', ' Я вижу, как ты стараешься!', ' Ты растешь над собой!',
           ' Ты многое сделал, я это вижу!', ' Теперь у тебя точно все получится!']
 schoolkid_id = 6551
-teacher_id = 697
+teacher_id = None
 commendation_created_date = '2019-05-08'
 
 
@@ -27,8 +29,17 @@ def lookup_ivan(schoolkid):
     return Ivan
 
 
+def get_teacher_id(teacher_name):
+    teachers = Teacher.objects.get(full_name__contains=teacher_name)
+    teacher_id = teachers.id
+    return teacher_id
+
+
+teacher_id = get_teacher_id(teacher_name)
+
+
 def fix_marks(schoolkid):
-    marks = Mark.objects.filter(schoolkid__full_name__contains=schoolkid)
+    marks = Mark.objects.filter(schoolkid__full_name__contains=schoolkid, points__lt=4)
     for mark in marks:
         mark.points = 4
         mark.save()
@@ -44,20 +55,8 @@ def create_commendation(schoolkid_id, teacher_id, praise, created):
     Commendation.objects.create(text=text, created=created, schoolkid_id=schoolkid_id, teacher_id=teacher_id)
 
 
-def get_schoolkid_id(student_name):
-    schoolkid = Schoolkid.objects.filter(full_name__contains=student_name)
-    schoolkid_id = schoolkid[0].id
-    return schoolkid_id
-
-
-def get_teacher_id(teacher_name):
-    teacher = Teacher.objects.get(full_name__contains=teacher_name)
-    teacher_id = teacher[0].id
-    return teacher_id
-
-
-schoolkid = lookup_ivan(schoolkid_name)
-lookup_ivan(schoolkid)
-fix_marks(schoolkid)
-remove_chastisements(schoolkid)
+schoolkids = lookup_ivan(schoolkid_name)
+fix_marks(schoolkid_name)
+remove_chastisements(schoolkid_name)
 create_commendation(schoolkid_id, teacher_id, praise, commendation_created_date)
+print(schoolkids)
