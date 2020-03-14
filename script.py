@@ -20,19 +20,27 @@ teacher_id = None
 commendation_created_date = '2019-05-08'
 
 
-def lookup_ivan(schoolkid):
-    Ivan = None
+def lookup_schoolkid(schoolkid_name):
     try:
-        Ivan = Schoolkid.objects.get(full_name__contains=schoolkid)
+        objects = Schoolkid.objects.get(full_name__contains=schoolkid_name)
     except MultipleObjectsReturned:
         print('more than one object was found')
-    return Ivan
+    except DoesNotExist:
+        print('does not exist')
+    return objects
 
 
 def get_teacher_id(teacher_name):
-    teachers = Teacher.objects.get(full_name__contains=teacher_name)
-    teacher_id = teachers.id
-    return teacher_id
+    try:
+        teachers = Teacher.DoesNotExist, Teacher.objects.get(full_name__contains=teacher_name)
+    except Exception as msg:
+        print(msg)
+    except MultipleObjectsReturned as msg:
+        raise BadRequest("Please use tag id")
+    else:
+        object, teacher_objects = teachers
+        teacher_id = teacher_objects.id
+        return teacher_id
 
 
 teacher_id = get_teacher_id(teacher_name)
@@ -45,9 +53,9 @@ def fix_marks(schoolkid):
         mark.save()
 
 
-def remove_chastisements(schoolkid):
-    chastisement = Chastisement.objects.filter(schoolkid__full_name__contains=schoolkid)
-    chastisement.delete()
+def remove_chastisements(schoolkid_name):
+    chastisements = Chastisement.objects.filter(schoolkid__full_name__contains=schoolkid_name)
+    chastisements.delete()
 
 
 def create_commendation(schoolkid_id, teacher_id, praise, created):
@@ -55,7 +63,7 @@ def create_commendation(schoolkid_id, teacher_id, praise, created):
     Commendation.objects.create(text=text, created=created, schoolkid_id=schoolkid_id, teacher_id=teacher_id)
 
 
-schoolkids = lookup_ivan(schoolkid_name)
+schoolkids = lookup_schoolkid(schoolkid_name)
 fix_marks(schoolkid_name)
 remove_chastisements(schoolkid_name)
 create_commendation(schoolkid_id, teacher_id, praise, commendation_created_date)
