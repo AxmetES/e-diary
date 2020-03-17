@@ -1,7 +1,5 @@
 from datacenter.models import Schoolkid, Commendation, Teacher, Chastisement, Mark
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.shortcuts import get_object_or_404
-
+from django.core.exceptions import MultipleObjectsReturned
 import random
 
 schoolkid_name = "Фролов Иван"
@@ -21,26 +19,26 @@ commendation_created_date = '2019-05-08'
 
 
 def lookup_schoolkid(schoolkid_name):
-    objects = None
+    schoolkid = None
     try:
-        objects = Schoolkid.objects.get(full_name__contains=schoolkid_name)
+        schoolkid = Schoolkid.objects.get(full_name__contains=schoolkid_name)
     except MultipleObjectsReturned:
         print('more than one object was found')
     except Schoolkid.DoesNotExist:
         print('does not exist')
-    return objects
+    return schoolkid
 
 
 def get_teacher_id(teacher_name):
-    teacher_id = None
     try:
-        objects = Teacher.objects.get(full_name__contains=teacher_name)
+        teacher = Teacher.objects.get(full_name__contains=teacher_name)
     except MultipleObjectsReturned:
-        print(f"more then one object founds")
+        print('more then one object founds')
+        return None
     except Teacher.DoesNotExist:
         print('does not exist')
-    else:
-        teacher_id = objects.id
+        return None
+    teacher_id = teacher.id
     return teacher_id
 
 
