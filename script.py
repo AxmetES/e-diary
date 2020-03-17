@@ -21,26 +21,27 @@ commendation_created_date = '2019-05-08'
 
 
 def lookup_schoolkid(schoolkid_name):
+    objects = None
     try:
         objects = Schoolkid.objects.get(full_name__contains=schoolkid_name)
     except MultipleObjectsReturned:
         print('more than one object was found')
-    except DoesNotExist:
+    except Schoolkid.DoesNotExist:
         print('does not exist')
     return objects
 
 
 def get_teacher_id(teacher_name):
+    teacher_id = None
     try:
-        teachers = Teacher.DoesNotExist, Teacher.objects.get(full_name__contains=teacher_name)
-    except Exception as msg:
-        print(msg)
-    except MultipleObjectsReturned as msg:
-        raise BadRequest("Please use tag id")
+        objects = Teacher.objects.get(full_name__contains=teacher_name)
+    except MultipleObjectsReturned:
+        print(f"more then one object founds")
+    except Teacher.DoesNotExist:
+        print('does not exist')
     else:
-        object, teacher_objects = teachers
-        teacher_id = teacher_objects.id
-        return teacher_id
+        teacher_id = objects.id
+    return teacher_id
 
 
 teacher_id = get_teacher_id(teacher_name)
